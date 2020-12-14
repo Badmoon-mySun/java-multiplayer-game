@@ -13,6 +13,7 @@ import ru.kpfu.itis.entities.states.State;
 import ru.kpfu.itis.others.RouteMove;
 
 import java.io.*;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,10 @@ public class ServerConnection implements ConnectionListener {
 
     public ServerConnection(String ip, int port) throws IOException {
         this.connection = new Connection(this, ip, port);
+    }
+
+    public ServerConnection(Socket socket) throws IOException {
+        this.connection = new Connection(this, socket);
     }
 
     public void sendPlayerMove(float x, float y, RouteMove route) {

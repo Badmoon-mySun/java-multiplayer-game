@@ -99,7 +99,7 @@ public class Game {
         }
     }
 
-    private BulletModel tankShot(TankModel tank) {
+    public static BulletModel tankShot(TankModel tank) {
         double x, y;
 
         switch (tank.getLastMove()) {

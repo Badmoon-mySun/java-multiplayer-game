@@ -46,7 +46,6 @@ public class BulletPresenter extends Presenter {
     @Override
     public void updateState(State state) {
         model.setState(state);
-        System.out.println(state);
 
         view.setTranslateX(state.getX());
         view.setTranslateY(state.getY());

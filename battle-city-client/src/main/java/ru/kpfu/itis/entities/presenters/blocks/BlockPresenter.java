@@ -44,6 +44,5 @@ public class BlockPresenter extends Presenter {
         blockModel.setState(state);
 
         BlockSnap.blockViewSnap(blockView, blockModel.getStatus());
-        System.out.println("BLOCK STATUS - " + blockModel.getStatus());
     }
 }

@@ -36,9 +36,9 @@ import java.util.List;
  */
 
 public class GameController {
-    private List<BulletPresenter> bullets = new ArrayList<>();
+    private static List<BulletPresenter> bullets = new ArrayList<>();
+    private static List<Model> obstacles = new ArrayList<>();
     private HashMap<Short, Presenter> map = new HashMap<>();
-    private List<Model> obstacles = new ArrayList<>();
 
     private Map<KeyCode, Boolean> keys;
     private ServerConnection connection;
@@ -88,7 +88,7 @@ public class GameController {
         timer.start();
     }
 
-    private void sendPlayerMove(long now) {
+    public void sendPlayerMove(long now) {
         for (KeyCode keyCode : playerMovesKeys) {
             if (keys.getOrDefault(keyCode, false)) {
                 RouteMove routeMove = RouteMove.getRouteMove(keyCode.toString());
@@ -129,7 +129,7 @@ public class GameController {
         }
     }
 
-    private Presenter getPresenterObjectByState(State state) {
+    public Presenter getPresenterObjectByState(State state) {
         switch (state.getType()) {
             case EntityType.PLAYER_1:
 
@@ -201,12 +201,15 @@ public class GameController {
         }
     }
 
-    private void checkTankIsClient(TankPresenter tank) {
+    public boolean checkTankIsClient(TankPresenter tank) {
         if (connection.getClientTankType() == tank.getModel().getType()) {
             this.tank = tank;
-        } else {
-            obstacles.add(tank.getModel());
+            return true;
         }
+
+        obstacles.add(tank.getModel());
+
+        return false;
     }
 
     public Pane getPane() {
