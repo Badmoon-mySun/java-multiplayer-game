@@ -8,6 +8,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import ru.kpfu.itis.controllers.GameController;
+import ru.kpfu.itis.controllers.RoomSettingController;
+import ru.kpfu.itis.net.Connection;
 import ru.kpfu.itis.utils.ServerConnection;
 
 import java.io.IOException;
@@ -47,8 +49,7 @@ public class BattleCity extends Application {
 
         timerFPS.start();
 
-        //showMainMenu();
-        showConfigurationRoom();
+        showMainMenu();
 
         stage.setResizable(false);
         stage.show();
@@ -61,11 +62,11 @@ public class BattleCity extends Application {
 
         Scene scene = new Scene(controller.getPane(), 624, 624, Color.BLACK);
 
-        scene.setFill(Color.BLACK);
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
 
         stage.setScene(scene);
+        stage.show();
     }
 
     public static void showMainMenu() {
@@ -81,12 +82,15 @@ public class BattleCity extends Application {
         }
     }
 
-    public static void showConfigurationRoom() {
+    public static void showConfigurationRoom(ServerConnection connection) {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(BattleCity.class.getResource("/roomSetting.fxml"));
 
         try {
             Scene scene = new Scene(loader.load());
+
+            RoomSettingController controller = loader.getController();
+            controller.setConnection(connection);
 
             stage.setScene(scene);
         } catch (IOException e) {

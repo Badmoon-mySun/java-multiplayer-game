@@ -43,6 +43,7 @@ public class TankPresenter extends Presenter {
 
     @Override
     public void updateState(State state) {
+        System.out.println(state + "-------");
         RouteMove route = RouteMove.getRouteMove(((TankState) state).getLastMove());
         move(state.getX(), state.getY(), route);
 

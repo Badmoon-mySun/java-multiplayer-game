@@ -1,7 +1,6 @@
 package ru.kpfu.itis.utils;
 
 import javafx.concurrent.Task;
-import ru.kpfu.itis.controllers.GameController;
 import ru.kpfu.itis.entities.states.blocks.BlockState;
 import ru.kpfu.itis.entities.states.bullets.BulletState;
 import ru.kpfu.itis.entities.states.tanks.TankState;
@@ -30,34 +29,43 @@ public class ServerConnection implements ConnectionListener {
     private byte clientTankType = -1;
     private Connection connection;
     private String roomKey = "";
+    private boolean gameRun = false;
 
     public ServerConnection(String ip, int port) throws IOException {
         this.connection = new Connection(this, ip, port);
     }
 
     public void sendPlayerMove(float x, float y, RouteMove route) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();) {
             out.write(ByteBuffer.allocate(4).putFloat(x).array());
             out.write(ByteBuffer.allocate(4).putFloat(y).array());
             out.write(route.getByte());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        connection.sendMessage(new Message(MessageType.PLAYER_MOVE.getByte(), out.toByteArray()));
-        try {
-            out.close();
+
+            connection.sendMessage(new Message(MessageType.PLAYER_MOVE.getByte(), out.toByteArray()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void sendShot() {
-        connection.sendMessage(new Message(MessageType.PLAYER_SHOT.getByte(), new byte[]{}));
+        connection.sendMessage(
+                new Message(MessageType.PLAYER_SHOT.getByte(), new byte[]{}));
     }
 
     public void sendRoomSettings(byte plCount, byte stage) {
-        connection.sendMessage(new Message(MessageType.ROOM_SETTINGS.getByte(), new byte[]{plCount, stage}));
+        connection.sendMessage(
+                new Message(MessageType.ROOM_SETTINGS.getByte(),
+                        new byte[]{plCount, stage}));
+    }
+
+    public void sendRoomCreate() {
+        connection.sendMessage(
+                new Message(MessageType.CREATE_ROOM.getByte(), new byte[]{}));
+    }
+
+    public void sendRoomConnection(String key) {
+        connection.sendMessage(new Message(MessageType.CONNECT_TO_ROOM.getByte(), key.getBytes()));
     }
 
     private void readSnapshots(byte[] data) {
@@ -69,25 +77,14 @@ public class ServerConnection implements ConnectionListener {
             while (in.available() > 0) {
                 b = in.readByte();
 
-                if (b == 3) { //TODO
-                    System.out.println(b);
+                if (b == EntityType.BRICK_BLOCK || b == EntityType.LASTING_BLOCK) {
+                    state = new BlockState(b);
+                } else if (b == EntityType.PLAYER_1 || b == EntityType.PLAYER_2) {
+                    state = new TankState(b);
+                } else if (b == EntityType.BULLET) {
+                    state = new BulletState(b);
+                } else {
                     continue;
-                }
-
-                switch (b) {
-                    case EntityType.BRICK_BLOCK:
-                    case EntityType.LASTING_BLOCK:
-                        state = new BlockState(b);
-                        break;
-                    case EntityType.PLAYER_1:
-                    case EntityType.PLAYER_2:
-                        state = new TankState(b);
-                        break;
-                    case EntityType.BULLET:
-                        state = new BulletState(b);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Wrong entity type");
                 }
 
                 state.parseBinary(in);
@@ -115,9 +112,11 @@ public class ServerConnection implements ConnectionListener {
                     roomKey = new String(message.getData());
                     break;
                 case GAME_START:
-                    if (taskOnGameStart != null) {
-                        new Thread(taskOnGameStart).start();
-                    }
+                    gameRun = true;
+                    break;
+                case GAME_OVER:
+                    gameRun = false;
+
             }
         } catch (Exception ignore) { }
     }
@@ -128,17 +127,14 @@ public class ServerConnection implements ConnectionListener {
 
     @Override
     public void onConnectionReady(Connection connection) {
-
     }
 
     @Override
     public void onDisconnect(Connection connection) {
-
     }
 
     @Override
     public void onException(Connection connection, Exception exp) {
-
     }
 
     public byte getClientTankType() {
@@ -151,5 +147,9 @@ public class ServerConnection implements ConnectionListener {
 
     public void setTaskOnGameStart(Task<Void> taskOnGameStart) {
         this.taskOnGameStart = taskOnGameStart;
+    }
+
+    public boolean isGameRun() {
+        return gameRun;
     }
 }

@@ -5,6 +5,8 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import ru.kpfu.itis.BattleCity;
+import ru.kpfu.itis.entities.states.tanks.TankState;
 import ru.kpfu.itis.utils.ServerConnection;
 import ru.kpfu.itis.entities.models.Model;
 import ru.kpfu.itis.entities.models.blocks.BrickBlockModel;
@@ -41,6 +43,7 @@ public class GameController {
     private Map<KeyCode, Boolean> keys;
     private ServerConnection connection;
     private Pane pane = new Pane();
+    private boolean gameRun = false;
 
     private TankPresenter tank;
 
@@ -68,6 +71,16 @@ public class GameController {
                     bulletMove();
 
                     lastUpdate = now ;
+
+                    if (connection.isGameRun()) {
+                        gameRun = true;
+                    }
+
+                    if (gameRun && !connection.isGameRun()) {
+                        this.stop();
+
+                        BattleCity.showMainMenu();
+                    }
                 }
             }
         };
@@ -81,7 +94,6 @@ public class GameController {
                 RouteMove routeMove = RouteMove.getRouteMove(keyCode.toString());
 
                 Move.moveTank(tank, obstacles, routeMove);
-                System.out.println(tank.getModel().getX());
 
                 connection.sendPlayerMove(tank.getModel().getX(), tank.getModel().getY(), routeMove);
             }
@@ -176,8 +188,14 @@ public class GameController {
             }
 
             if (!state.equals(presenter.getModel().getState())) {
+                System.out.println(states);
                 if (state.getType() != connection.getClientTankType()) {
                     presenter.updateState(state);
+                } else {
+                    if (((TankState) state).getHP() !=
+                            ((TankState) presenter.getModel().getState()).getHP() )  {
+                        presenter.updateState(state);
+                    }
                 }
             }
         }

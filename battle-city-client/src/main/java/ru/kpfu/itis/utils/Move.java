@@ -124,7 +124,11 @@ public class Move {
                 if (model instanceof BlockModel) {
                     blockBulletHit((BlockModel) model, bulletModel.getRoute());
                 } else if (model instanceof TankModel) {
-                    ((TankModel) model).hit();
+                    TankModel tankModel = (TankModel) model;
+                    tankModel.hit();
+                    if (!tankModel.isALive()) {
+                        tankModel.move(-100, -100, RouteMove.DOWN);
+                    }
                 } else if (model instanceof BulletModel) {
                     ((BulletModel) model).destroy();
                 }
