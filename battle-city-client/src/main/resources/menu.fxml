@@ -9,50 +9,59 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="612.0" prefWidth="612.0" style="-fx-background-color: black;" styleClass="bodybg" stylesheets="@css/menu.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Menu">
-   <children>
-      <VBox alignment="TOP_CENTER" layoutX="115.0" layoutY="217.0" prefHeight="200.0" prefWidth="383.0" AnchorPane.bottomAnchor="195.0" AnchorPane.topAnchor="345.0">
-         <children>
-            <Label prefHeight="12.0" prefWidth="108.0" text="Server IP address" textFill="WHITE">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <TextField alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" promptText="127.0.0.1:11905">
-               <VBox.margin>
-                  <Insets left="10.0" right="10.0" top="5.0" />
-               </VBox.margin>
-               <font>
-                  <Font size="22.0" />
-               </font>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="612.0"
+            prefWidth="612.0" style="-fx-background-color: black;" styleClass="background" stylesheets="@css/menu.css"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.kpfu.itis.controllers.MenuController">
+    <VBox alignment="TOP_CENTER" layoutX="115.0" layoutY="217.0" prefHeight="200.0" prefWidth="383.0"
+          AnchorPane.bottomAnchor="195.0" AnchorPane.topAnchor="345.0">
+        <Label prefHeight="12.0" prefWidth="108.0" text="Server IP address" textFill="WHITE">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <TextField alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0"
+                   promptText="127.0.0.1:11905" fx:id="serverIpField">
+            <VBox.margin>
+                <Insets left="10.0" right="10.0" top="5.0"/>
+            </VBox.margin>
+            <font>
+                <Font size="22.0"/>
+            </font>
+        </TextField>
+        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                mnemonicParsing="false" prefHeight="28.0" prefWidth="134.0" text="Create Room" textAlignment="CENTER"
+                textOverrun="CLIP" onMouseClicked="#createRoom">
+            <VBox.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </VBox.margin>
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Button>
+        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+            <VBox.margin>
+                <Insets left="10.0" right="10.0" top="10.0"/>
+            </VBox.margin>
+            <TextField alignment="CENTER" promptText="HADAU" fx:id="connectToRoomField">
+                <HBox.margin>
+                    <Insets right="5.0" top="10.0"/>
+                </HBox.margin>
             </TextField>
-            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="28.0" prefWidth="134.0" text="Create Room" textAlignment="CENTER" textOverrun="CLIP">
-               <VBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </VBox.margin>
-               <font>
-                  <Font size="14.0" />
-               </font>
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Connet to room"
+                    textAlignment="CENTER" wrapText="true" onMouseClicked="#connectToRoom">
+                <HBox.margin>
+                    <Insets right="5.0" top="10.0"/>
+                </HBox.margin>
             </Button>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <TextField alignment="CENTER" promptText="HADAU">
-                     <HBox.margin>
-                        <Insets bottom="10.0" right="5.0" top="10.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Connet to room" textAlignment="CENTER" wrapText="true">
-                     <HBox.margin>
-                        <Insets bottom="10.0" right="5.0" top="10.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </VBox.margin>
-            </HBox>
-         </children>
-      </VBox>
-   </children>
+        </HBox>
+        <Label textFill="RED" fx:id="errorLabel">
+            <VBox.margin>
+                <Insets top="5.0"/>
+            </VBox.margin>
+            <font>
+                <Font name="System Bold" size="12.0"/>
+            </font>
+        </Label>
+    </VBox>
 </AnchorPane>

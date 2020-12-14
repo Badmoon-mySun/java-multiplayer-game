@@ -1,4 +1,4 @@
-bodybg {
+.background {
     -fx-background-image: url("../img/menu.png");
     -fx-background-size: 100% 100%;
 }

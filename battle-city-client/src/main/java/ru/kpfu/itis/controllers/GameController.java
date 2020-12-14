@@ -4,6 +4,7 @@ package ru.kpfu.itis.controllers;
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import ru.kpfu.itis.utils.ServerConnection;
 import ru.kpfu.itis.entities.models.Model;
 import ru.kpfu.itis.entities.models.blocks.BrickBlockModel;
@@ -24,6 +25,7 @@ import ru.kpfu.itis.utils.Rect;
 import ru.kpfu.itis.others.RouteMove;
 
 import java.util.*;
+import java.util.List;
 
 /**
  * @author Anvar Khasanov
@@ -36,12 +38,11 @@ public class GameController {
     private HashMap<Short, Presenter> map = new HashMap<>();
     private List<Model> obstacles = new ArrayList<>();
 
-    private ServerConnection serverConnection;
     private Map<KeyCode, Boolean> keys;
+    private ServerConnection connection;
     private Pane pane = new Pane();
 
     private TankPresenter tank;
-    private byte tankType = -1;
 
     private long lastShotTime = 0;
     private List<KeyCode> playerMovesKeys = new ArrayList<>(Arrays.asList(
@@ -51,9 +52,9 @@ public class GameController {
             KeyCode.LEFT
     ));
 
-    public GameController(Map<KeyCode, Boolean> keys) {
-        serverConnection = new ServerConnection(this);
-
+    public GameController(ServerConnection connection, Map<KeyCode, Boolean> keys) {
+        pane.setStyle("-fx-background-color: black");
+        this.connection = connection;
         this.keys = keys;
 
         AnimationTimer timer = new AnimationTimer() {
@@ -62,7 +63,7 @@ public class GameController {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= 28_000_000) {
-                    updateMap(serverConnection.getStates());
+                    updateMap(GameController.this.connection.getStates());
                     sendPlayerMove(now);
                     bulletMove();
 
@@ -80,15 +81,16 @@ public class GameController {
                 RouteMove routeMove = RouteMove.getRouteMove(keyCode.toString());
 
                 Move.moveTank(tank, obstacles, routeMove);
+                System.out.println(tank.getModel().getX());
 
-                serverConnection.sendPlayerMove(tank.getModel().getX(), tank.getModel().getY(), routeMove);
+                connection.sendPlayerMove(tank.getModel().getX(), tank.getModel().getY(), routeMove);
             }
         }
 
         long twoSeconds = 2_000_000_000;
 
         if (now - lastShotTime >= twoSeconds && keys.getOrDefault(KeyCode.SPACE, false)) {
-            serverConnection.sendShot();
+            connection.sendShot();
 
             lastShotTime = now;
         }
@@ -174,7 +176,7 @@ public class GameController {
             }
 
             if (!state.equals(presenter.getModel().getState())) {
-                if (state.getType() != tankType) {
+                if (state.getType() != connection.getClientTankType()) {
                     presenter.updateState(state);
                 }
             }
@@ -182,7 +184,7 @@ public class GameController {
     }
 
     private void checkTankIsClient(TankPresenter tank) {
-        if (tankType == tank.getModel().getType()) {
+        if (connection.getClientTankType() == tank.getModel().getType()) {
             this.tank = tank;
         } else {
             obstacles.add(tank.getModel());
@@ -191,9 +193,5 @@ public class GameController {
 
     public Pane getPane() {
         return pane;
-    }
-
-    public void setTankType(byte tankType) {
-        this.tankType = tankType;
     }
 }
